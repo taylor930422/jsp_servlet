@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="userMapper">
+	<insert id="insert" parameterType="model.dto.UserDTO">
+		<!-- INSERT INTO USER_T VALUES (#{userId}, #{password}, #{email}, DEFAULT) -->
+		INSERT ALL
+		  INTO USER_T(userId, password, email, pImg)
+		       VALUES(#{userId}, #{password}, #{email}, DEFAULT)
+		  INTO ROLE_T(id, userId, rtype)
+		       VALUES(ROLE_S.NEXTVAL, #{userId}, 'USER')
+		 SELECT * FROM DUAL
+	</insert>
+
+
+	<select id="selectUser" parameterType="model.dto.UserDTO"
+		resultType="model.dto.UserDTO">
+		SELECT userId, password, email, pImg FROM USER_T WHERE userId = #{userId}
+	</select>
+
+	<update id="update" parameterType="model.dto.UserDTO">
+	 UPDATE USER_T
+	    SET password = #{password}
+	      ,	email = #{email}
+	  WHERE userId = #{userId}
+	</update>
+	
+	<select id="selectRole" parameterType="model.dto.UserDTO" resultType="model.dto.Role">
+		SELECT rtype AS type FROM ROLE_T WHERE userId = #{userId}
+		<!-- 
+		rtype AS type인 이유 Role 클래스 파일에 멤버변수명이 type이므로 AS type을 해야한다. 
+		-->
+	</select>
+	<update id="updateImage" parameterType="model.dto.UserDTO">
+		UPDATE USER_T
+		   SET pImg = #{pImg}
+		 WHERE userId = #{userId}
+	</update>
+	
+	
+
+
+</mapper>

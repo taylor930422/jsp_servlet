@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="visitMapper">
+  <select id="connectTest" resultType="string">
+  	SELECT 'CONNECT SUCCESS' FROM DUAL
+  </select>
+  <select id="selectId" parameterType="model.dto.VisitDTO" resultType="model.dto.VisitDTO">
+  	SELECT id, nickname, context FROM VISIT_T WHERE id = #{id}
+  </select>
+  <select id="selectAll" resultType="model.dto.VisitDTO">
+  	SELECT id, nickname, context FROM VISIT_T
+  </select>
+  <insert id="insert" parameterType="model.dto.VisitDTO">
+  	INSERT INTO VISIT_T VALUES(#{id}, #{context}, #{nickname})
+  </insert>
+  <update id="update" parameterType="model.dto.VisitDTO">
+  	UPDATE VISIT_T
+  	   SET nickname = #{nickname}
+  	     , context = #{context}
+  	 WHERE id = #{id}
+  </update>
+  <delete id="delete" parameterType="model.dto.VisitDTO">
+  	DELETE FROM VISIT_T WHERE id = #{id}
+  </delete>
+  <select id="getId" resultType="int">
+  	SELECT VISIT_S.NEXTVAL FROM DUAL
+  </select>
+  <select id="selectPage" parameterType="map" resultType="model.dto.VisitDTO">
+  	SELECT id, nickname, context
+      FROM (SELECT ROWNUM AS NUM
+                 , id, nickname, context
+              FROM (SELECT *
+                      FROM VISIT_T
+                     ORDER BY ID)
+      )
+     WHERE NUM BETWEEN #{start} AND #{end}
+  </select>
+  <select id="totalRowCount" resultType="int">
+  	SELECT COUNT(*) FROM VISIT_T
+  </select>
+</mapper>

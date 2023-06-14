@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="boardMapper">
+	<select id="selectPage" parameterType="map"
+		resultType="model.dto.BoardDTO">
+		SELECT id, btype, title, writer, createDate, viewCnt
+		FROM (SELECT ROWNUM AS NUM
+		, id, btype, title, writer, createDate, viewCnt
+		FROM (SELECT *
+		FROM BOARD_T
+		ORDER BY BTYPE DESC)
+		)
+		WHERE NUM BETWEEN #{start} AND #{end}
+	</select>
+	<select id="totalRowCount" resultType="int">
+		SELECT COUNT(*) FROM
+		BOARD_T
+	</select>
+	<select id="selectData" parameterType="model.dto.BoardDTO" resultType="model.dto.BoardDTO">
+		SELECT id, btype, title, writer, context, createDate, updateDate
+		     , viewCnt, recCnt, nrecCnt
+		  FROM BOARD_T
+		 WHERE id = #{id}
+	</select>
+	<update id="updateViewCnt" parameterType="model.dto.BoardDTO">
+		UPDATE BOARD_T
+		SET viewCnt = viewCnt + 1
+		WHERE id = #{id}
+	</update>
+	<select id="selectNextSeq" resultType="int">
+		SELECT BOARD_S.NEXTVAL
+		FROM DUAL
+	</select>
+	<insert id="insert" parameterType="model.dto.BoardDTO">
+		INSERT INTO BOARD_T
+		VALUES(#{id}, #{btype}, #{title}, #{writer}, #{context}, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)
+	</insert>
+	<update id="update" parameterType="model.dto.BoardDTO">
+		UPDATE BOARD_T
+		SET title = #{title}
+		, context = #{context}
+		, updateDate = SYSDATE
+		WHERE id = #{id}
+	</update>
+	<delete id="delete" parameterType="model.dto.BoardDTO">
+		DELETE FROM BOARD_T WHERE id =
+		#{id}
+	</delete>
+	<delete id="checkedDelete" parameterType="list">
+		DELETE FROM BOARD_T
+		WHERE id IN
+		<foreach item="id" open="(" close=")" separator=","
+			collection="list">
+			#{id}
+		</foreach>
+	</delete>
+
+	<update id="updateNRecCnt" parameterType="model.dto.BoardDTO">
+		UPDATE BOARD_T
+		   SET nRecCnt = nRecCnt + 1
+		 WHERE id = #{id}
+	</update>
+	<update id="updateDecreNRecCnt" parameterType="model.dto.BoardDTO">
+		UPDATE BOARD_T
+		   SET nRecCnt = nRecCnt - 1
+		 WHERE id = #{id}
+	</update>
+	<update id="updateRecCnt" parameterType="model.dto.BoardDTO">
+		UPDATE BOARD_T
+		   SET recCnt = recCnt + 1
+		 WHERE id = #{id}
+	</update>
+	<update id="updateDecreRecCnt" parameterType="model.dto.BoardDTO">
+		UPDATE BOARD_T
+		   SET recCnt = recCnt - 1
+		 WHERE id = #{id}
+	</update>
+	
+	<insert id="insertImage" parameterType="model.dto.BoardImageDTO">
+		INSERT INTO BOARD_IMG_T VALUES(BOARD_IMG_S.NEXTVAL, #{boardId}, #{path}, #{name}, #{uuid})
+	</insert>
+	<select id="selectImages" parameterType="model.dto.BoardDTO" resultType="model.dto.BoardImageDTO">
+		SELECT id, boardId, path, name, uuid FROM BOARD_IMG_T WHERE boardId = #{id}
+	</select>
+	<delete id="deleteImages" parameterType="model.dto.BoardDTO">
+		DELETE FROM BOARD_IMG_T WHERE boardId = #{id}
+	</delete>
+</mapper>

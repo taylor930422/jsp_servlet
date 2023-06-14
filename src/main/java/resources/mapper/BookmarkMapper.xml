@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bookmarkMapper">
+
+	<select id="selectId" parameterType="model.dto.BookmarkDTO"
+		resultType="model.dto.BookmarkDTO">
+		SELECT id, userid, url, name FROM BOOKMARK_T WHERE id =
+		#{id} AND userId = #{userId}
+	</select>
+
+	<select id="selectAll" resultType="model.dto.BookmarkDTO"
+		parameterType="model.dto.BookmarkDTO">
+		SELECT id, userid, url, name FROM BOOKMARK_T WHERE
+		userId =
+		#{userId}
+	</select>
+
+	<select id="getId" resultType="int">
+		SELECT BOOKMARK_S.NEXTVAL FROM
+		DUAL
+	</select>
+
+	<insert id="insert" parameterType="model.dto.BookmarkDTO">
+		INSERT INTO BOOKMARK_T(id,
+		userid,
+		url, name) VALUES(#{id}, #{userId}, #{url}, #{name})
+	</insert>
+
+	<update id="update" parameterType="model.dto.BookmarkDTO">
+
+		UPDATE BOOKMARK_T
+		SET url =
+		#{url}
+		, name = #{name}
+		WHERE id = #{id}
+		AND userId = #{userId}
+	</update>
+
+	<select id="selectPage" parameterType="map"
+		resultType="model.dto.BookmarkDTO">
+		SELECT id, userid, url, name
+		  FROM(SELECT ROWNUM AS NUM
+		              , id, userid, url, name
+		  FROM (SELECT * 
+		          FROM BOOKMARK_T 
+		         WHERE userId = #{userId} 
+		         ORDER BY ID))
+	     WHERE NUM BETWEEN #{start} AND #{end}
+	</select>
+
+	<select id="totalRowCount" resultType="int"
+		parameterType="model.dto.BookmarkDTO">
+		SELECT COUNT(*) FROM BOOKMARK_T WHERE userId = #{userId}
+	</select>
+
+
+	<delete id="delete" parameterType="model.dto.BookmarkDTO">
+		DELETE FROM BOOKMARK_T WHERE
+		id = #{id} AND userId = #{userId}
+	</delete>
+
+</mapper>
